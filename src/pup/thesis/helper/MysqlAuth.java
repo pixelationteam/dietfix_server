@@ -8,7 +8,7 @@ package pup.thesis.helper;
  * @author paulzed
  *
  */
-abstract class MysqlAuth {
+public class MysqlAuth {
 	
 	private String url = "jdbc:mysql://localhost:8080/food";
 	private String username = "paulzed";
