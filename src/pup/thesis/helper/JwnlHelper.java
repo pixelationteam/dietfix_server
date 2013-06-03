@@ -49,11 +49,20 @@ public class JwnlHelper {
 	 */
 	public ArrayList<Synset> getSynonyms(IndexWord word) {
 		ArrayList<Synset> listSense = new ArrayList<Synset>();
+		PointerTargetNodeList list;
+		
 		try {
 			Synset[] senses = word.getSenses();
-			
 			if(senses.length > 0) {
-			
+				list = PointerUtils.getInstance().getSynonyms(senses[0]);
+				
+				Iterator i = list.iterator();
+				
+				while(i.hasNext()) {
+					PointerTargetNode p = (PointerTargetNode)i.next();
+					Synset s = p.getSynset();
+					listSense.add(s);
+				}
 			}
 			
 		} catch (JWNLException e) {
@@ -62,6 +71,61 @@ public class JwnlHelper {
 		}
 		
 		return listSense;
+	}
+	
+	/**
+	 * 
+	 * @param word
+	 * @return
+	 */
+	public ArrayList<Synset> getHypernym(IndexWord word) {
+		ArrayList<Synset> listHypernym = new ArrayList<Synset>();
+		PointerTargetNodeList list;
+		
+		try {
+			Synset[] set = word.getSenses();
+			list = PointerUtils.getInstance().getDirectHypernyms(set[0]);
+			
+			Iterator i = list.iterator();
+			
+			while(i.hasNext()) {
+				PointerTargetNode node = (PointerTargetNode)i.next();
+				Synset s = node.getSynset();
+				listHypernym.add(s);
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return listHypernym;
+	}
+	
+	/**
+	 * 
+	 * @param word
+	 * @return
+	 */
+	public ArrayList<Synset> getHyponym(IndexWord word) {
+		ArrayList<Synset> listHyponym = new ArrayList<Synset>();
+		PointerTargetNodeList list;
+		
+		try {
+			Synset[] set = word.getSenses();
+			list = PointerUtils.getInstance().getDirectHyponyms(set[0]);
+			
+			Iterator i = list.iterator();
+			
+			while(i.hasNext()) {
+				PointerTargetNode node = (PointerTargetNode)i.next();
+				Synset s = node.getSynset();
+				listHyponym.add(s);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return listHyponym;
 	}
 	
 	/**

@@ -51,13 +51,14 @@ public class DietfixController extends HttpServlet {
 		// TODO Auto-generated method stub
 		
 		CoreParser parser = new CoreParser();
-		//synonym = new WordSynonym();
+		synonym = new WordSynonym();
 		JwnlHelper help = new JwnlHelper();
 		IndexWord word;
 		
 		try {
-			word = help.getWord(POS.VERB, "inquire");
-			Synset[] sets = word.getSenses();
+			word = help.getWord(POS.ADJECTIVE, "pretty");
+			ArrayList<Synset> sets = help.getSynonyms(word);
+			//ArrayList<String> synonyms = synonym.synset2String(sets);
 			request.setAttribute("word", sets);
 		} catch(Exception e) {
 			e.printStackTrace();

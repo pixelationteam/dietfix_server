@@ -48,25 +48,19 @@
 		
 		out.print("<p>" + path + "</p>");
 		
-		Synset[] set = (Synset[])request.getAttribute("word");
 		
-		out.print("<br/>" + set[0].getGloss());
-		/*
-		ArrayList<ArrayList<String>> synonyms = new ArrayList<ArrayList<String>>();
-		synonyms = (ArrayList<ArrayList<String>>)request.getAttribute("synonyms");
+		ArrayList<Synset> synonyms = new ArrayList<Synset>();
+		synonyms = (ArrayList<Synset>)request.getAttribute("word");
 		
-		Iterator<ArrayList<String>> i = synonyms.iterator();
-		
-		while(i.hasNext()) {
-			ArrayList<String> subSynonym = new ArrayList<String>();
-			subSynonym = (ArrayList<String>)i.next();
+		if(!synonyms.isEmpty()) {
+			Iterator<Synset> i = synonyms.iterator();
 			
-			Iterator<String> i2 = subSynonym.iterator();
-			
-			while(i2.hasNext()) {
-				out.print( "<br/>" + i2.next() + "<br/>" );
+			while(i.hasNext()) {
+				Synset set = i.next();
 			}
-		}*/
+		}
+		
+		
 	%>
 	<a href="index.html">Click me!</a>
 </body>
