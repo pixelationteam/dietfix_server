@@ -31,7 +31,6 @@ public class MysqlHelper extends MysqlAuth {
 	
 	/**
 	 * 
-	 * 
 	 * @return
 	 */
 	public boolean initMySql() {

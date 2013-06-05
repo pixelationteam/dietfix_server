@@ -6,6 +6,7 @@ import java.util.Iterator;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.Word;
 import pup.thesis.helper.JwnlHelper;
@@ -32,21 +33,30 @@ public class WordSynonym {
 	 */
 	public ArrayList<Synset> getSynonyms(String input, String stringPos) {
 		ArrayList<Synset> synonyms = new ArrayList<Synset>();
+		ArrayList<Synset> temp = new ArrayList<Synset>();
 		helper = new JwnlHelper();
 		IndexWord word;
 		POS pos;
 		
 		try {
 			pos = helper.getPOS(stringPos);
+			PointerType type = identifyPointerType(pos);
 			word = helper.getWord(pos, input);
-			ArrayList<Synset> set = helper.getSynonyms(word);
 			
-			Iterator<Synset> i = set.iterator();
+			if(type == PointerType.HYPERNYM) {
+				
+			} 
+			else if (type == PointerType.SIMILAR_TO) {
+				temp = helper.getSynonyms(word);
+			}
+			
+			Iterator<Synset> i = temp.iterator();
 			
 			while(i.hasNext()) {
 				Synset synset = (Synset)i.next();
 				synonyms.add(synset);
 			}
+			
 		} catch (JWNLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,6 +65,24 @@ public class WordSynonym {
 		return synonyms;
 	}
 	
+	private PointerType identifyPointerType(POS pos) {
+		PointerType pointer = null;
+		
+		if(pos.equals(POS.VERB) || pos.equals(POS.NOUN)) {
+			pointer =  PointerType.HYPERNYM;
+		}
+		else if(pos.equals(POS.ADJECTIVE)) {
+			pointer = PointerType.SIMILAR_TO;
+		}
+		
+		return pointer;
+	}
+	
+	/**
+	 * 
+	 * @param sets
+	 * @return
+	 */
 	public ArrayList<String> synset2String(ArrayList<Synset> sets) {
 		ArrayList<String> synsets = new ArrayList<String>();
 		
