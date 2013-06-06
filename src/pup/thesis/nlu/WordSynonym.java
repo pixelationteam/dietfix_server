@@ -1,5 +1,6 @@
 package pup.thesis.nlu;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,6 +11,7 @@ import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.Word;
 import pup.thesis.helper.JwnlHelper;
+import pup.thesis.helper.MysqlHelper;
 
 /**
  * Class that will determine whether
@@ -25,6 +27,7 @@ import pup.thesis.helper.JwnlHelper;
 public class WordSynonym {
 	
 	private JwnlHelper helper;
+	private MysqlHelper sqlHelper;
 	
 	/**
 	 * 
@@ -100,6 +103,14 @@ public class WordSynonym {
 	public String getRelatedWordInDb(String input) {
 		String relatedWord = "";
 		
+		ResultSet set;
+		sqlHelper = new MysqlHelper();
+		
+		try {
+			set = sqlHelper.executeQuery("");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		
 		return relatedWord;
@@ -110,8 +121,7 @@ public class WordSynonym {
 	 * @param input
 	 * @return
 	 */
-	private boolean iterateInDb(String input) {
-		
+	private boolean iterateInDb(ResultSet set) {
 		
 		//if none of the synonyms exist in the database
 		return false;
