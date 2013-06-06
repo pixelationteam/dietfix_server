@@ -31,9 +31,8 @@ public class WordSynonym {
 	 * @param input
 	 * @return
 	 */
-	public ArrayList<Synset> getSynonyms(String input, String stringPos) {
+	public ArrayList<Synset> getRelatedWords(String input, String stringPos) {
 		ArrayList<Synset> synonyms = new ArrayList<Synset>();
-		ArrayList<Synset> temp = new ArrayList<Synset>();
 		helper = new JwnlHelper();
 		IndexWord word;
 		POS pos;
@@ -44,17 +43,10 @@ public class WordSynonym {
 			word = helper.getWord(pos, input);
 			
 			if(type == PointerType.HYPERNYM) {
-				
+				synonyms = helper.getHypernym(word);
 			} 
 			else if (type == PointerType.SIMILAR_TO) {
-				temp = helper.getSynonyms(word);
-			}
-			
-			Iterator<Synset> i = temp.iterator();
-			
-			while(i.hasNext()) {
-				Synset synset = (Synset)i.next();
-				synonyms.add(synset);
+				synonyms = helper.getSynonyms(word);
 			}
 			
 		} catch (JWNLException e) {
