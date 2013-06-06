@@ -3,7 +3,10 @@ package pup.thesis.helper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This class provides basic functionalities for sql.
@@ -33,8 +36,9 @@ public class MysqlHelper extends MysqlAuth {
 	 * 
 	 * @return
 	 */
-	public boolean initMySql() {
+	private boolean initMySql() {
 		try{
+			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
 			if(!con.isValid(3)) {
 				return true;
@@ -47,14 +51,53 @@ public class MysqlHelper extends MysqlAuth {
 	}
 	
 	/**
+	 * Gateway for queries regarding updating the database
+	 * (insert, delete and update)
 	 * 
-	 * @param order
+	 * @param statement
+	 * @return
 	 */
-	public void setOrderBy(String order) {
-		if(this.orderBy.isEmpty()) {
-			this.orderBy = order;
+	public boolean updateDb(String statement) {
+		statement = filterQuery(statement);
+		initMySql();
+		
+		try {
+			st = con.createStatement();
+			st.executeUpdate(statement);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	public ResultSet selectAll(String tableName) {
+		try {
+			st = con.createStatement();
+			set = st.executeQuery("SELECT * FROM " + tableName);
+		} catch(Exception e) {
+			e.printStackTrace();
+		} 
+		return set;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param fields
+	 */
+	public void setSelect(String fields) {
+		fields = filterQuery(fields);
+		if(this.select.isEmpty()) {
+			this.select = fields;
 		} else {
-			orderBy += " " + order;
+			this.select += " " + fields;
 		}
 	}
 	
@@ -72,41 +115,13 @@ public class MysqlHelper extends MysqlAuth {
 	
 	/**
 	 * 
-	 * @param tableName
-	 * @return
+	 * @param order
 	 */
-	public ResultSet selectAll(String tableName) {
-		try {
-			st = con.createStatement();
-			set = st.executeQuery("SELECT * FROM " + tableName);
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (st != null) {
-					st.close();
-				}
-				if(set != null) {
-					st.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return set;
-	}
-	
-	/**
-	 * 
-	 * 
-	 * @param fields
-	 */
-	public void setSelect(String fields) {
-		fields = filterQuery(fields);
-		if(this.select.isEmpty()) {
-			this.select = fields;
+	public void setOrderBy(String order) {
+		if(this.orderBy.isEmpty()) {
+			this.orderBy = order;
 		} else {
-			this.select += " " + fields;
+			orderBy += " " + order;
 		}
 	}
 	
@@ -130,23 +145,13 @@ public class MysqlHelper extends MysqlAuth {
 	 */
 	public ResultSet executeQuery(String query) {
 		try {
+			initMySql();
 			query = filterQuery(query);
 			st = con.createStatement();
 			set = st.executeQuery(query);
 		} catch(Exception e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				if(st != null) {
-					st.close();
-				}
-				if(set != null) {
-					set.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		} 
 		
 		return set;
 	}
@@ -157,25 +162,14 @@ public class MysqlHelper extends MysqlAuth {
 	 */
 	public ResultSet executeQuery() {
 		try {
+			initMySql();
 			String sql = select + " " + from + " " + where + " " + groupBy + " " + orderBy;
 			sql = filterQuery(sql);
 			st = con.createStatement();
 			set = st.executeQuery(sql);
 		} catch(Exception e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				if(st != null) {
-					st.close();
-				}
-				if(set != null) {
-					set.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
-		
 		return set;
 	}
 	
@@ -197,6 +191,6 @@ public class MysqlHelper extends MysqlAuth {
 	 * @return
 	 */
 	private String filterQuery(String query) {
-		return query.replace("#", "");
+		return query.replace("#", "").replace("--", "");
 	}
 }
