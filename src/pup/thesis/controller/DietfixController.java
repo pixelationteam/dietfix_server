@@ -1,7 +1,13 @@
 package pup.thesis.controller;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,6 +20,7 @@ import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 import pup.thesis.helper.JwnlHelper;
+import pup.thesis.helper.MysqlHelper;
 import pup.thesis.nlu.CoreParser;
 import pup.thesis.nlu.WordSynonym;
 import edu.stanford.nlp.trees.Tree;
@@ -25,7 +32,11 @@ import edu.stanford.nlp.trees.Tree;
 public class DietfixController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
+	//--Declared global variables
 	private WordSynonym synonym;
+	private MysqlHelper sql;
+	//--
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -66,9 +77,11 @@ public class DietfixController extends HttpServlet {
 		
 		String input = (String)request.getParameter("input");
 		
+		insertData();
 		ArrayList<String> result = parser.getTokens(input);
 		ArrayList<String> result2 = parser.getTags(input);
 		ArrayList<String> result3 = parser.getLemma(input);
+		ArrayList<String> result4 = getDataFromSql();
 		Tree parseTree = parser.getParseTree(input);
 		
 		
@@ -76,7 +89,7 @@ public class DietfixController extends HttpServlet {
 		request.setAttribute("tags", result2);
 		request.setAttribute("lemma", result3);
 		request.setAttribute("tree", parseTree);
-		
+		request.setAttribute("sqlResult", result4);
 		request.setAttribute("path", getServletContext().getRealPath("/"));
 		
 		
@@ -95,7 +108,7 @@ public class DietfixController extends HttpServlet {
 		
 		for(int i = 0; i < lemma.size(); i++) {
 			try {
-				synsets = synonym.getSynonyms(lemma.get(i), posTags.get(i));
+				synsets = synonym.getRelatedWords(lemma.get(i), posTags.get(i));
 				if(!synsets.isEmpty()) {
 					synonyms.add(synonym.synset2String(synsets));
 				}
@@ -105,6 +118,48 @@ public class DietfixController extends HttpServlet {
 		}
 		
 		return synonyms;
+	}
+	
+	private ArrayList<String> getDataFromSql() {
+		ArrayList<String> table = new ArrayList<String>();
+		ArrayList<String> tableName = new ArrayList<String>();
+		
+		sql = new MysqlHelper();
+	
+		try {
+			ResultSet set = sql.executeQuery("select * from user");
+			ResultSetMetaData metadata = set.getMetaData();
+			
+			for(int i = 1; i <= metadata.getColumnCount(); i++) {
+				tableName.add(metadata.getColumnLabel(i));
+			}
+			
+			while(set.next()) {
+				Iterator<String> i = tableName.iterator();
+				
+				while(i.hasNext()) {
+					table.add(set.getString(i.next()));
+				}
+				
+			}
+		} catch(Exception e) {
+			
+		}
+			
+		return table;
+	}
+	
+	private void insertData() {
+		sql = new MysqlHelper();
+		String insertStatement = "INSERT INTO user VALUES(" +
+				"null, 'paulzed', 'kakashi17', '12345678', " +
+				"'paul', 'v', 'artigo', NOW(), NOW())";
+		
+		String deleteStatement = "DELETE FROM user WHERE userID = 2";
+		
+		sql.updateDb(insertStatement);
+		
+		//sql.updateDb(deleteStatement);
 	}
 	
 	protected String processToNLU(String input) {
