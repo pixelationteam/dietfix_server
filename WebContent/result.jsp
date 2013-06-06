@@ -33,6 +33,41 @@
 			
 		%>
 	</table>
+	<br />
+	<table align="center" border="1" bordercolor="black" style="border-collapse: collapse; 
+	border-spacing: 5px">
+		<tr>
+			<td>User ID</td>
+			<td>Username</td>
+			<td>Password</td>
+			<td>Salt</td>
+			<td>First Name</td>
+			<td>Middle Name</td>
+			<td>Last Name</td>
+			<td>Date Created</td>
+			<td>Date Modified</td>
+		</tr>
+		<%
+			ArrayList<String> tableData = new ArrayList<String>();
+			tableData = (ArrayList<String>)request.getAttribute("sqlResult");
+			
+			Iterator<String> i = tableData.iterator();
+			
+			while(i.hasNext()) {
+				out.print("<tr>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("<td>" + i.next() + "</td>");
+				out.print("</tr>");
+			}
+		%>
+	</table>
 	<%
 		String path = request.getAttribute("path").toString();
 		try{
@@ -53,13 +88,12 @@
 		synonyms = (ArrayList<Synset>)request.getAttribute("word");
 		
 		if(!synonyms.isEmpty()) {
-			Iterator<Synset> i = synonyms.iterator();
+			Iterator<Synset> synset = synonyms.iterator();
 			
-			while(i.hasNext()) {
-				Synset set = i.next();
+			while(synset.hasNext()) {
+				Synset set = synset.next();
 			}
 		}
-		
 		
 	%>
 	<a href="index.html">Click me!</a>
