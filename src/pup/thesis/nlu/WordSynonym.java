@@ -108,6 +108,7 @@ public class WordSynonym {
 		
 		try {
 			set = sqlHelper.executeQuery("");
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
