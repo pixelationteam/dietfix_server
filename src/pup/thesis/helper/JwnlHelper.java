@@ -1,6 +1,5 @@
 package pup.thesis.helper;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,15 +8,22 @@ import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
+import net.didion.jwnl.data.relationship.Relationship;
+import net.didion.jwnl.data.relationship.RelationshipFinder;
+import net.didion.jwnl.data.relationship.RelationshipList;
 import net.didion.jwnl.dictionary.Dictionary;
+
+import com.mysql.jdbc.log.Log;
 
 public class JwnlHelper {
 	
 	private Dictionary wordnet;
+	private Log log;
 	
 	/**
 	 * This constructor will instantiate the
@@ -39,6 +45,30 @@ public class JwnlHelper {
 	
 	public boolean isInitialized() {
 		return JWNL.isInitialized();
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param first
+	 * @param second
+	 * @param type
+	 * @return
+	 * @throws JWNLException
+	 */
+	public Relationship getDepthOfRelationship(Synset[] first, Synset[] second, PointerType type) throws JWNLException {
+		
+		for(int x = 0; x < first.length; x++) {
+			for(int y = 0; y < second.length; y++) {
+				RelationshipList list = RelationshipFinder.getInstance().findRelationships(first[x], second[y], type);
+				
+				if(!list.isEmpty()) {
+					return (Relationship) list.get(0);
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
