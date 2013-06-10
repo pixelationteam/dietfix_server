@@ -23,6 +23,7 @@ import pup.thesis.helper.JwnlHelper;
 import pup.thesis.helper.MysqlHelper;
 import pup.thesis.nlu.CoreParser;
 import pup.thesis.nlu.WordSynonym;
+import pup.thesis.test.WordSynonymTest;
 import edu.stanford.nlp.trees.Tree;
 
 /**
@@ -65,6 +66,7 @@ public class DietfixController extends HttpServlet {
 		synonym = new WordSynonym();
 		JwnlHelper help = new JwnlHelper();
 		IndexWord word;
+		WordSynonymTest test = new WordSynonymTest();
 		
 		try {
 			word = help.getWord(POS.ADJECTIVE, "pretty");
@@ -83,7 +85,8 @@ public class DietfixController extends HttpServlet {
 		ArrayList<String> result3 = parser.getLemma(input);
 		ArrayList<String> result4 = getDataFromSql();
 		Tree parseTree = parser.getParseTree(input);
-		
+		int depth = 0;
+		depth = test.getDepth();
 		
 		request.setAttribute("tokens", result);
 		request.setAttribute("tags", result2);
@@ -91,6 +94,7 @@ public class DietfixController extends HttpServlet {
 		request.setAttribute("tree", parseTree);
 		request.setAttribute("sqlResult", result4);
 		request.setAttribute("path", getServletContext().getRealPath("/"));
+		request.setAttribute("depth", depth);
 		
 		
 		
@@ -157,6 +161,7 @@ public class DietfixController extends HttpServlet {
 		
 		String deleteStatement = "DELETE FROM user WHERE userID = 2";
 		
+		sql.updateDb(insertStatement);
 		sql.updateDb(insertStatement);
 		
 		//sql.updateDb(deleteStatement);
