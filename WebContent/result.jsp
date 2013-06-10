@@ -95,6 +95,8 @@
 			}
 		}
 		
+		int depth = Integer.parseInt(request.getAttribute("depth").toString());
+		out.print(depth);
 	%>
 	<a href="index.html">Click me!</a>
 </body>
