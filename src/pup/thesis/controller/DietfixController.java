@@ -111,6 +111,7 @@ public class DietfixController extends HttpServlet {
 		ArrayList<Synset> synsets = new ArrayList<Synset>();
 		
 		for(int i = 0; i < lemma.size(); i++) {
+			
 			try {
 				synsets = synonym.getRelatedWords(lemma.get(i), posTags.get(i));
 				if(!synsets.isEmpty()) {
@@ -119,6 +120,7 @@ public class DietfixController extends HttpServlet {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+			
 		}
 		
 		return synonyms;

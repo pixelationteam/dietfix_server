@@ -165,13 +165,31 @@ public class WordSynonym {
 	 * 
 	 * @param input
 	 * @param word
+	 * @param wordTag
 	 * @throws SQLException
 	 * @return
 	 */
-	private boolean iterateInDb(String word, ResultSet set) throws SQLException {
+	private boolean iterateInDb(String word, POS wordTag, ResultSet set) throws SQLException {
+		
+		helper = new JwnlHelper();
+		String dbWord = "";
+		String dbPos = "";
+		POS _dbPos;
+		RelatedWord rlWord = new RelatedWord();
 		
 		while(set.next()) {
 			
+			dbWord = set.getString(1);
+			dbPos = set.getString(2);
+			_dbPos = helper.getPOS(dbPos);
+			
+			if(isRelated(word, wordTag, dbWord, _dbPos)) {
+				rlWord.setLabel(word);
+				rlWord.setTag(wordTag);
+			}
+			else {
+				
+			}
 		}
 		
 		//if none of the synonyms exist in the database
@@ -184,8 +202,8 @@ public class WordSynonym {
 	 * @param synonym
 	 * @return
 	 */
-	private boolean isRelated(String word, String synonym) {
-		return (word.equalsIgnoreCase(synonym)) ? true : false;
+	private boolean isRelated(String word, POS wordTag, String synonym, POS synonymTag) {
+		return (word.equalsIgnoreCase(synonym) && wordTag.equals(synonymTag)) ? true : false;
 	}
 	
 	
