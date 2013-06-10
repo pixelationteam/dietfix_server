@@ -1,6 +1,7 @@
 package pup.thesis.nlu;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,8 +11,11 @@ import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.Word;
+import net.didion.jwnl.data.relationship.Relationship;
 import pup.thesis.helper.JwnlHelper;
 import pup.thesis.helper.MysqlHelper;
+
+import com.mysql.jdbc.log.Log;
 
 /**
  * Class that will determine whether
@@ -19,6 +23,9 @@ import pup.thesis.helper.MysqlHelper;
  * word doesn't exist in the database, it will
  * find the synonyms of that word which could
  * possibly be on the database.
+ * 
+ * This class also utilizes Reinforcement Learning
+ * 
  * 
  * @since 05-20-2013
  * @author paulzed
@@ -28,6 +35,43 @@ public class WordSynonym {
 	
 	private JwnlHelper helper;
 	private MysqlHelper sqlHelper;
+	private Log log;
+	
+	/**
+	 * 
+	 * 
+	 * @param firstWord
+	 * @param firstPOS
+	 * @param secondWord
+	 * @param secondPOS
+	 * @return
+	 */
+	public int getPercetageOfRelevance(String firstWord, POS firstPOS, String secondWord, POS secondPOS) {
+		
+		helper = new JwnlHelper();
+		IndexWord _firstWord, _secondWord;
+		Relationship rel;
+		int percentage = 0;
+		Synset[] set1 = null, set2 = null;
+		
+		try {
+			
+			_firstWord = helper.getWord(firstPOS, firstWord);
+			_secondWord = helper.getWord(secondPOS, secondWord);
+			
+			 set1 = _firstWord.getSenses();
+			 set2 = _secondWord.getSenses();
+			
+			rel = helper.getDepthOfRelationship(set1, set2, PointerType.SIMILAR_TO);
+			
+			percentage = rel.getDepth();
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return percentage;
+	}
 	
 	/**
 	 * 
@@ -81,10 +125,10 @@ public class WordSynonym {
 	public ArrayList<String> synset2String(ArrayList<Synset> sets) {
 		ArrayList<String> synsets = new ArrayList<String>();
 		
-		Iterator i = sets.iterator();
+		Iterator<Synset> i = sets.iterator();
 		
 		while(i.hasNext()) {
-			Synset synset = (Synset)i.next();
+			Synset synset = i.next();
 			Word[] words = synset.getWords();
 			
 			for(int x = 0; x < words.length; x++) {
@@ -107,7 +151,7 @@ public class WordSynonym {
 		sqlHelper = new MysqlHelper();
 		
 		try {
-			set = sqlHelper.executeQuery("");
+			set = sqlHelper.executeQuery("SELECT * FROM known_words");                   
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -120,9 +164,15 @@ public class WordSynonym {
 	/**
 	 * 
 	 * @param input
+	 * @param word
+	 * @throws SQLException
 	 * @return
 	 */
-	private boolean iterateInDb(ResultSet set) {
+	private boolean iterateInDb(String word, ResultSet set) throws SQLException {
+		
+		while(set.next()) {
+			
+		}
 		
 		//if none of the synonyms exist in the database
 		return false;
