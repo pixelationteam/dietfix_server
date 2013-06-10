@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import pup.thesis.util.ClientData;
+import pup.thesis.util.mysql.SafeConnection;
+
 /**
  * This class provides basic functionalities for sql.
  * It uses the mysql connector to connect with the 
@@ -49,6 +52,25 @@ public class MysqlHelper extends MysqlAuth {
 		
 		return false;
 	}
+	
+	public static Connection createWordnetConnection(ClientData clientdata) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        String dbHost,dbPort,dbName,dbUn,dbPw;
+        dbHost = "localhost";
+        dbPort = "3306";
+        dbUn = "root";
+        dbPw = "";
+        dbName = "Wordnet30";
+        return new SafeConnection(clientdata.getQuerier(),dbHost, dbPort, dbName, dbUn, dbPw).getConnectionObject();
+    }
+    public static Connection createFoodDBConnection(ClientData clientdata) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        String dbHost,dbPort,dbName,dbUn,dbPw;
+        dbHost = "localhost";
+        dbPort = "3306";
+        dbUn = "root";
+        dbPw = "";
+        dbName = "sr25food";
+        return new SafeConnection(clientdata.getQuerier(),dbHost, dbPort, dbName, dbUn, dbPw).getConnectionObject();
+    }
 	
 	/**
 	 * Gateway for queries regarding updating the database

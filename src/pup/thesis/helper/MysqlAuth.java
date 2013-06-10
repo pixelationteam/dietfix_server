@@ -11,8 +11,8 @@ package pup.thesis.helper;
 public class MysqlAuth {
 	
 	private String url = "jdbc:mysql://localhost/dietfix";
-	private String username = "paulzed";
-	private String password = "march141994";
+	private String username = "pixelized";
+	private String password = "12345678";
 	
 	protected String getUrl() {
 		return url;
