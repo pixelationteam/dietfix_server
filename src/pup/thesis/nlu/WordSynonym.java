@@ -14,6 +14,7 @@ import net.didion.jwnl.data.Word;
 import net.didion.jwnl.data.relationship.Relationship;
 import pup.thesis.helper.JwnlHelper;
 import pup.thesis.helper.MysqlHelper;
+import pup.thesis.learning.reinforcement.ReinforcementLearning;
 
 import com.mysql.jdbc.log.Log;
 
@@ -31,7 +32,7 @@ import com.mysql.jdbc.log.Log;
  * @author paulzed
  *
  */
-public class WordSynonym {
+public class WordSynonym extends ReinforcementLearning {
 	
 	private JwnlHelper helper;
 	private MysqlHelper sqlHelper;
@@ -40,81 +41,37 @@ public class WordSynonym {
 	/**
 	 * 
 	 * 
-	 * @param firstWord
-	 * @param firstPOS
-	 * @param secondWord
-	 * @param secondPOS
+	 * @param word
 	 * @return
+	 * @throws SQLException
 	 */
-	public int getPercetageOfRelevance(String firstWord, POS firstPOS, String secondWord, POS secondPOS) {
+	public boolean isWordExistInDb(ArrayList<RelatedWord> word) throws SQLException {
 		
-		helper = new JwnlHelper();
-		IndexWord _firstWord, _secondWord;
-		Relationship rel;
-		int percentage = 0;
-		Synset[] set1 = null, set2 = null;
+		ArrayList<RelatedWord> kWords = new ArrayList<RelatedWord>();
 		
-		try {
-			
-			_firstWord = helper.getWord(firstPOS, firstWord);
-			_secondWord = helper.getWord(secondPOS, secondWord);
-			
-			 set1 = _firstWord.getSenses();
-			 set2 = _secondWord.getSenses();
-			
-			rel = helper.getDepthOfRelationship(set1, set2, PointerType.SIMILAR_TO);
-			
-			percentage = rel.getDepth();
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		kWords = iterateInDb();
 		
-		return percentage;
-	}
-	
-	/**
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public ArrayList<Synset> getRelatedWords(String input, String stringPos) {
-		ArrayList<Synset> synonyms = new ArrayList<Synset>();
-		helper = new JwnlHelper();
-		IndexWord word;
-		POS pos;
+		Iterator<RelatedWord> i2 = kWords.iterator();
+		Iterator<RelatedWord> i = word.iterator();
 		
-		try {
-			pos = helper.getPOS(stringPos);
-			PointerType type = identifyPointerType(pos);
-			word = helper.getWord(pos, input);
-			
-			if(type == PointerType.HYPERNYM) {
-				synonyms = helper.getHypernym(word);
-			} 
-			else if (type == PointerType.SIMILAR_TO) {
-				synonyms = helper.getSynonyms(word);
+		while(i.hasNext()) {
+			while(i2.hasNext()) {
+				RelatedWord kWord = i2.next();
+				RelatedWord _word = i.next();
+				
+				if(isSame(_word.getLabel(), _word.getTag(), kWord.getLabel(), kWord.getTag())) {
+					return true;
+				}
 			}
-			
-		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
-		return synonyms;
+		return false;
 	}
 	
-	private PointerType identifyPointerType(POS pos) {
-		PointerType pointer = null;
-		
-		if(pos.equals(POS.VERB) || pos.equals(POS.NOUN)) {
-			pointer =  PointerType.HYPERNYM;
-		}
-		else if(pos.equals(POS.ADJECTIVE)) {
-			pointer = PointerType.SIMILAR_TO;
-		}
-		
-		return pointer;
+	public boolean learnWord() {
+		RelatedWord word = new RelatedWord();	
+			
+		return false;
 	}
 	
 	/**
@@ -139,61 +96,49 @@ public class WordSynonym {
 		return synsets;
 	}
 	
-	/**
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public String getRelatedWordInDb(String input) {
-		String relatedWord = "";
-		
-		ResultSet set;
-		sqlHelper = new MysqlHelper();
-		
-		try {
-			set = sqlHelper.executeQuery("SELECT * FROM known_words");                   
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-		return relatedWord;
-	}
+	
 	
 	/**
 	 * 
-	 * @param input
-	 * @param word
-	 * @param wordTag
+	 * @param set
 	 * @throws SQLException
 	 * @return
 	 */
-	private boolean iterateInDb(String word, POS wordTag, ResultSet set) throws SQLException {
+	private ArrayList<RelatedWord> iterateInDb() throws SQLException {
 		
+		ArrayList<RelatedWord> listRelated = new ArrayList<RelatedWord>();
 		helper = new JwnlHelper();
-		String dbWord = "";
-		String dbPos = "";
-		POS _dbPos;
+		sqlHelper = new MysqlHelper();
 		RelatedWord rlWord = new RelatedWord();
 		
+		ResultSet set = sqlHelper.executeQuery("SELECT * FROM known_words");
+		
 		while(set.next()) {
-			
-			dbWord = set.getString(1);
-			dbPos = set.getString(2);
-			_dbPos = helper.getPOS(dbPos);
-			
-			if(isRelated(word, wordTag, dbWord, _dbPos)) {
-				rlWord.setLabel(word);
-				rlWord.setTag(wordTag);
-			}
-			else {
-				
-			}
+			rlWord.setLabel(set.getString(1));
+			rlWord.setTag(helper.getPOS(set.getString(2)));
+			rlWord.setAction(set.getString(3));
+			listRelated.add(rlWord);
 		}
 		
-		//if none of the synonyms exist in the database
-		return false;
+
+		return listRelated;
+	}
+	
+	
+	/**
+	 * 
+	 * @param word
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean updateKnownWords(RelatedWord word) throws SQLException {
+		
+		sqlHelper = new MysqlHelper();
+		
+		String query = "INSERT INTO known_words VALUES(" +
+				"null, " + word.getLabel() + ", " + word.getTag() + ", " ;
+		
+		return (sqlHelper.updateDb(query)) ? true : false;
 	}
 	
 	/**
@@ -202,9 +147,8 @@ public class WordSynonym {
 	 * @param synonym
 	 * @return
 	 */
-	private boolean isRelated(String word, POS wordTag, String synonym, POS synonymTag) {
+	private boolean isSame(String word, POS wordTag, String synonym, POS synonymTag) {
 		return (word.equalsIgnoreCase(synonym) && wordTag.equals(synonymTag)) ? true : false;
 	}
-	
 	
 }

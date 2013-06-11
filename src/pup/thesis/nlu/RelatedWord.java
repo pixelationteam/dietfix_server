@@ -9,6 +9,16 @@ public class RelatedWord {
 	private int rank = 0;
 	private String label = "";
 	private POS tag;
+	private String action = "";
+	private String Id = "";
+	
+	public void setId(String Id) {
+		this.Id = Id;
+	}
+	
+	public String getId() {
+		return Id;
+	}
 	
 	public void setLabel(String label) {
 		this.label = label;
@@ -32,6 +42,14 @@ public class RelatedWord {
 	
 	public POS getTag() {
 		return tag;
+	}
+	
+	public String getAction() {
+		return action;
+	}
+	
+	public void setAction(String action) {
+		this.action = action;
 	}
 	
 }
