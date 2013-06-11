@@ -1,11 +1,17 @@
 package pup.thesis.nlu;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import pup.thesis.helper.StanfordHelper;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.GrammaticalStructureFactory;
+import edu.stanford.nlp.trees.PennTreebankLanguagePack;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TypedDependency;
 
 /**
  * 
@@ -30,6 +36,10 @@ public class CoreParser {
 		lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
 	}
 	
+	
+	public LexicalizedParser getParser(){
+		return lp;
+	}
 	/**
 	 * 
 	 * @param input
@@ -83,6 +93,12 @@ public class CoreParser {
 		return lemma;
 	}
 	
+	public List<TypedDependency> getDependencies(Tree parseTree){
+		TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+		GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+		GrammaticalStructure gs = gsf.newGrammaticalStructure(parseTree);
+		return gs.typedDependenciesCCprocessed();
+	}
 	/**
 	 * 
 	 * @param validateInput
