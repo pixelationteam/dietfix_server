@@ -1,5 +1,9 @@
 package pup.thesis.learning;
 
-public class MachineLearning {
-
+public interface MachineLearning {
+	
+	boolean learn();
+	
+	
+	
 }
