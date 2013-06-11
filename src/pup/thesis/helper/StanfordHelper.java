@@ -1,27 +1,18 @@
 package pup.thesis.helper;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
-import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import pup.thesis.nlu.RelatedWord;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.process.PTBTokenizer;
-import edu.stanford.nlp.process.PTBTokenizer.PTBTokenizerFactory;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
-import edu.stanford.nlp.util.CoreMap;
 
 /**
  * 
@@ -53,7 +44,40 @@ public class StanfordHelper {
 		Tree parseTree = lparser.apply(list);
 		
 		return parseTree;
-	}	
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param sentence
+	 * @param lparser
+	 * @return
+	 */
+	public static Tree getParseTree(ArrayList<RelatedWord> sentence, LexicalizedParser lparser) {
+		
+		Iterator<RelatedWord> i = sentence.iterator();
+		
+		String structuredSentence = "";
+		
+		while(i.hasNext()) {
+			RelatedWord word = i.next();
+			
+			if(structuredSentence.isEmpty()) {
+				structuredSentence = word.getLabel();
+			}
+			else {
+				structuredSentence += " " + word.getLabel();
+			}
+		}
+		
+		TokenizerFactory<CoreLabel> tf = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
+		
+		List<CoreLabel> list = tf.getTokenizer(new StringReader(structuredSentence)).tokenize();
+		
+		Tree parseTree = lparser.apply(list);
+		
+		return parseTree;
+	}
 	
 	/**
 	 * 

@@ -75,7 +75,7 @@ public class JwnlHelper {
 	 * This method will get all the synonyms of the given word.
 	 * 
 	 * @param sense
-	 * @return ArrayList<ArrayList<Synset>>
+	 * @return ArrayList<Synsety6>
 	 */
 	public ArrayList<Synset> getSynonyms(IndexWord word) {
 		ArrayList<Synset> listSense = new ArrayList<Synset>();
@@ -101,6 +101,25 @@ public class JwnlHelper {
 		}
 		
 		return listSense;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	public PointerType identifyPointerType(POS pos) {
+		PointerType pointer = null;
+		
+		if(pos.equals(POS.VERB) || pos.equals(POS.NOUN)) {
+			pointer =  PointerType.HYPERNYM;
+		}
+		else if(pos.equals(POS.ADJECTIVE)) {
+			pointer = PointerType.SIMILAR_TO;
+		}
+		
+		return pointer;
 	}
 	
 	/**
