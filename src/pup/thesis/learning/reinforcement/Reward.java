@@ -9,10 +9,10 @@ public class Reward {
 	 * @return
 	 */
 	public int getReward(int depth) {
+		
 		int reward = getCriteriaEquivalent(depth);
 		
-		
-		return 0;
+		return reward;
 	}
 	
 	/**
