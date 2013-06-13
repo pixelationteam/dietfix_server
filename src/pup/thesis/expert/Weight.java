@@ -1,26 +1,11 @@
-package pup.thesis.knowledgebase.expert;
+package pup.thesis.expert;
 
 public class Weight {
 
-	String unit;
-	double val;
-	
-	Weight(){
-		
-	}
+	final String unit;
+	final double val;
 	
 	Weight(String text) throws Exception{
-		
-	}
-	
-	public String getUnit(){
-		return unit;
-	}
-	public double getValue(){
-		return val;
-	}
-	
-	void setUnit(String text) throws Exception{
 		text = text.trim();
 		int ind = text.indexOf(' ');
 		if(ind>0){
@@ -32,8 +17,5 @@ public class Weight {
 		else{
 			throw new Exception();
 		}
-	}
-	void setVal(double val){
-		this.val = val;
 	}
 }

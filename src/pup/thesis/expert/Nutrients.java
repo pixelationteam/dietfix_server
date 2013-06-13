@@ -1,4 +1,4 @@
-package pup.thesis.knowledgebase.expert;
+package pup.thesis.expert;
 
 import org.jooq.Field;
 
