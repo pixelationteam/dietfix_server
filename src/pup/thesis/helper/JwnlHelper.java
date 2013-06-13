@@ -11,12 +11,14 @@ import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.data.Word;
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
 import net.didion.jwnl.data.relationship.Relationship;
 import net.didion.jwnl.data.relationship.RelationshipFinder;
 import net.didion.jwnl.data.relationship.RelationshipList;
 import net.didion.jwnl.dictionary.Dictionary;
+import pup.thesis.nlu.RelatedWord;
 
 import com.mysql.jdbc.log.Log;
 
@@ -65,11 +67,15 @@ public class JwnlHelper {
 				if(!list.isEmpty()) {
 					return (Relationship) list.get(0);
 				}
+				
+				
 			}
 		}
 		
 		return null;
 	}
+	
+	
 	
 	/**
 	 * This method will get all the synonyms of the given word.
@@ -189,6 +195,116 @@ public class JwnlHelper {
 	public IndexWord getWord(POS pos, String word) throws JWNLException {
 		IndexWord indexWord = wordnet.getIndexWord(pos, word);
 		return indexWord;
+	}
+	
+	
+	/**
+	 * 
+	 * Converts a ArrayList<RelatedWord> to ArrayList<IndexWord>
+	 * 
+	 * @param input
+	 * @return
+	 * @throws JWNLException
+	 */
+	public ArrayList<IndexWord> convertToIndexWord(ArrayList<RelatedWord> sentence) throws JWNLException {
+		ArrayList<IndexWord> words = new ArrayList<IndexWord>();
+		
+		Iterator<RelatedWord> i = sentence.iterator();
+		
+		while(i.hasNext()) {
+			RelatedWord w = i.next();
+			
+			String word = w.getLabel();
+			POS pos = w.getTag();
+			
+			words.add(getWord(pos, word));
+		}
+		
+		return words;
+		
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param r
+	 * @return
+	 */
+	public ArrayList<Synset> getRelationshipChain(Relationship r) {
+		ArrayList<String> chain = new ArrayList<String>();
+		ArrayList<Synset> sets = new ArrayList<Synset>();
+		
+		PointerTargetNodeList list = r.getNodeList();
+		
+		Iterator i = list.iterator();
+		
+		while(i.hasNext()) {
+			PointerTargetNode node = (PointerTargetNode)i.next();
+			sets.add(node.getSynset());
+		}
+		
+		Iterator<Synset> i2 = sets.iterator();
+		
+		while(i2.hasNext()) {
+			Synset s = i2.next();
+			Word[] word = s.getWords();
+			
+			for(Word w : word) {
+				chain.add(w.getLemma());
+			}
+		}
+		
+		return sets;
+	}
+	
+	/**
+	 * 
+	 * Convert RelatedWord to an IndexWord
+	 * 
+	 * @param word
+	 * @return
+	 * @throws JWNLException
+	 */
+	public IndexWord convertToIndexWord(RelatedWord word) throws JWNLException {
+		
+		IndexWord _word = null;
+		
+		try {
+			String w = word.getLabel();
+			POS p = word.getTag();
+			
+			_word = getWord(p, w);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return _word;
+	}
+	
+	/**
+	 *
+	 *@param pos
+	 *@return
+	 */
+	public String getPOS(POS pos) {
+		
+		if(pos.equals(POS.VERB)) {
+			return "VB";
+		}
+		else if(pos.equals(POS.NOUN)) {
+			return "NN";
+		}
+		else if(pos.equals(POS.ADJECTIVE)) {
+			return "JJ";
+		}
+		else if(pos.equals(POS.ADVERB)) {
+			return "RB";
+		}
+		else {
+			return "";
+		}
 	}
 	
 	/**

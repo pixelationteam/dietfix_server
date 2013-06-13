@@ -207,6 +207,17 @@ public class MysqlHelper extends MysqlAuth {
 		from = "";
 	}
 	
+	public void closeConnections() {
+		try {
+			set.close();
+			st.close();
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * 
 	 * @param query
