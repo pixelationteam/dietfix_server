@@ -1,4 +1,4 @@
-package pup.thesis.expert;
+package pup.thesis.knowledgebase.expert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,11 +21,13 @@ public class Food implements DBObject{
 	final String id;
 	final Record record;
 	final String shortDescription;
-	public HashMap<Nutrients,Double> nutrients = new HashMap<Nutrients, Double>();
-	
+	private HashMap<Nutrients,Double> nutrients = new HashMap<Nutrients, Double>();
+	private Weight weight1 = new Weight(),weight2 = new Weight(); 
+	private final FoodCategory foodcat;
 	Food(Record resultrec){
 		record = resultrec;
 		String idd = "invalid",desc = "None";
+		String catid = "invalid",catdesc="invalid";
 		for(Field<?> field: record.fields()){
 			Nutrients nut = Nutrients.valueOf(field);
 			if(nut!=null){
@@ -37,14 +39,70 @@ public class Food implements DBObject{
 			else if(field.equals(Tables.ABBREV.SHRT_DESC)){
 				desc = record.getValue(Tables.ABBREV.SHRT_DESC);
 			}
+			else if(field.equals(Tables.ABBREV.GMWT_1)){
+				try{
+				double wv1 = record.getValue(Tables.ABBREV.GMWT_1);
+				weight1.setVal(wv1);
+				}
+				catch(NullPointerException ex){
+					weight1 = null;
+				}
+			}
+			else if(field.equals(Tables.ABBREV.GMWT_2)){
+				try{
+				double wv2 = record.getValue(Tables.ABBREV.GMWT_2);
+				weight2.setVal(wv2);
+				}
+				catch(NullPointerException ex){
+					weight2 = null;
+				}
+			}
+			else if(field.equals(Tables.ABBREV.GMWT_DESC1)){
+				try {
+					String wd1 = record.getValue(Tables.ABBREV.GMWT_DESC1);
+					weight1.setUnit(wd1);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					App.log("Food:",e.getMessage());
+					weight1 = null;
+				}
+			}
+			else if(field.equals(Tables.ABBREV.GMWT_DESC2)){
+				try {
+					String wd2 = record.getValue(Tables.ABBREV.GMWT_DESC2);
+					weight2.setUnit(wd2);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					App.log("Food:",e.getMessage());
+					weight2 = null;
+				}
+			}
+			else if(field.equals(Tables.LANGUAL.FACTOR)){
+				
+				catid = record.getValue(Tables.LANGUAL.FACTOR);
+				
+			}
+			else if(field.equals(Tables.LANGDESC.DESCRIPTION)){
+				catdesc = record.getValue(Tables.LANGDESC.DESCRIPTION);
+			}
+			
+			
 		}
 		
 		id = idd;
 		shortDescription = desc;
-		
-		
+		foodcat = new FoodCategory(catid, catdesc);
 	}
 
+	public FoodCategory getFoodCategory(){
+		return foodcat;
+	}
+	public Weight getWeight1(){
+		return weight1;
+	}
+	public Weight getWeight2(){
+		return weight2;
+	}
 	public String getID(){
 		return id;
 	}

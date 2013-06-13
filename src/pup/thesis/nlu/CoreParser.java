@@ -29,7 +29,7 @@ public class CoreParser {
 	 * 
 	 */
 	
-	private LexicalizedParser lp;
+	private final LexicalizedParser lp;
 	
 	public CoreParser() {
 		// TODO Auto-generated constructor stub

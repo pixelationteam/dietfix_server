@@ -53,6 +53,16 @@ public class MysqlHelper extends MysqlAuth {
 		return false;
 	}
 	
+	public static Connection createDietfixConnection(ClientData clientdata) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        String dbHost,dbPort,dbName,dbUn,dbPw;
+        dbHost = "localhost";
+        dbPort = "3306";
+        dbUn = "root";
+        dbPw = "";
+        dbName = "dietfix";
+        return new SafeConnection(clientdata.getQuerier(),dbHost, dbPort, dbName, dbUn, dbPw).getConnectionObject();
+    }
+	
 	public static Connection createWordnetConnection(ClientData clientdata) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String dbHost,dbPort,dbName,dbUn,dbPw;
         dbHost = "localhost";

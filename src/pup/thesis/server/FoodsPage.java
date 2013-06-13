@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import pup.thesis.expert.Category;
-import pup.thesis.expert.Dietitian;
-import pup.thesis.expert.Factor;
 import pup.thesis.helper.MysqlHelper;
+import pup.thesis.knowledgebase.expert.Dietitian;
+import pup.thesis.knowledgebase.expert.Factor;
+import pup.thesis.knowledgebase.expert.FoodCategory;
 import pup.thesis.logging.App;
 import pup.thesis.nlu.CoreParser;
 import pup.thesis.util.ServerPage;
@@ -73,8 +73,8 @@ public class FoodsPage extends ServerPage{
          StringBuilder ret = new StringBuilder();
          
          try {
-        	 List<Category> cat = dietitian.getFoodCategories();
-			for(Category ff:cat){
+        	 List<FoodCategory> cat = dietitian.getFoodCategories();
+			for(FoodCategory ff:cat){
 				ret.append(String.format("<option val='%s'>%s</option>", ff.id,ff.description));
 			 }
 		} catch (SQLException e) {

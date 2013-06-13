@@ -13,6 +13,7 @@ import org.jooq.impl.DSL;
 import assets.sr25food.Tables;
 
 import pup.thesis.helper.MysqlHelper;
+import pup.thesis.nlu.pos.TypedDep;
 import pup.thesis.util.ClientData;
 
 public class FoodQG implements QueryGenerator {
@@ -36,10 +37,15 @@ public class FoodQG implements QueryGenerator {
 		return null;
 	}
 
-	@Override
 	public ResultQuery<Record> generateQuery() {
 		// TODO Auto-generated method stub
-		return dc.select().from(Tables.ABBREV).limit(100,1);
+		return dc.select().from(Tables.LANGDESC.leftOuterJoin(Tables.LANGUAL).using(Tables.LANGUAL.FACTOR).leftOuterJoin(Tables.ABBREV).using(Tables.LANGUAL.NDB_NO)).limit(100,50);
+	}
+
+	@Override
+	public ResultQuery<Record> generateQuery(List<TypedDep> tp) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
