@@ -12,6 +12,10 @@ public class RelatedWord {
 	private String action = "";
 	private String Id = "";
 	
+	public boolean equals(RelatedWord word) {
+		return (word.getLabel().equals(label) && word.getTag().equals(tag)) ? true : false;
+	}
+	
 	public void setId(String Id) {
 		this.Id = Id;
 	}

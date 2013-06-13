@@ -64,7 +64,7 @@ public class NoiseDetector {
 	 * @return
 	 * @throws SQLException
 	 */
-	private ArrayList<String> getNoiseWordsInDb() throws SQLException {
+	public ArrayList<String> getNoiseWordsInDb() throws SQLException {
 		
 		ArrayList<String> noiseList = new ArrayList<String>();
 		
@@ -75,7 +75,7 @@ public class NoiseDetector {
 		ResultSet set = helper.executeQuery(query);
 		
 		while(set.next()) {
-			noiseList.add(set.getString(1));
+			noiseList.add(set.getString(2));
 		}
 		
 		return noiseList;
